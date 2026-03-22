@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- App identity -->
+    <key>CFBundleName</key>
+    <string>ActivityMonitor</string>
+
+    <key>CFBundleDisplayName</key>
+    <string>Activity Monitor</string>
+
+    <!-- Change this to match your Apple Developer team identifier -->
+    <key>CFBundleIdentifier</key>
+    <string>com.yourname.ActivityMonitor</string>
+
+    <key>CFBundleVersion</key>
+    <string>1</string>
+
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+
+    <key>CFBundleExecutable</key>
+    <string>ActivityMonitor</string>
+
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+
+    <!-- Minimum macOS version: 13.0 Ventura (required for SMAppService) -->
+    <key>LSMinimumSystemVersion</key>
+    <string>13.0</string>
+
+    <!--
+        LSUIElement = YES makes this an "agent application":
+        • No Dock icon
+        • No entry in the application switcher (Cmd+Tab)
+        • No "Application" menu
+        The app lives exclusively in the system menu bar via NSStatusItem.
+    -->
+    <key>LSUIElement</key>
+    <true/>
+
+    <!-- Required when using a manual main.swift entry point -->
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+</dict>
+</plist>
