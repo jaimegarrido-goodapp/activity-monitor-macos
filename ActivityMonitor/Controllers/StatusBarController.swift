@@ -20,11 +20,15 @@ final class StatusBarController: NSObject {
     private let statusItem: NSStatusItem
     private let manager:    MetricsManager
 
+    // Injected by AppDelegate after init.
+    weak var managerWindowController: ManagerWindowController?
+
     // Menu items that receive live metric text each tick.
     private let cpuItem       = NSMenuItem(title: "CPU: —",          action: nil,                    keyEquivalent: "")
     private let ramItem       = NSMenuItem(title: "RAM: — / —",      action: nil,                    keyEquivalent: "")
     private let pauseItem     = NSMenuItem(title: "Pause updates",    action: #selector(handlePause), keyEquivalent: "p")
     private let loginItem     = NSMenuItem(title: "Launch at Login",  action: #selector(handleLogin), keyEquivalent: "l")
+    private let manageItem    = NSMenuItem(title: "Manage Menu Bar…", action: #selector(handleManage), keyEquivalent: "m")
 
     // MARK: - Init
 
@@ -72,6 +76,11 @@ final class StatusBarController: NSObject {
         // --- Launch at Login ---
         loginItem.target = self
         menu.addItem(loginItem)
+        menu.addItem(.separator())
+
+        // --- Manage Menu Bar ---
+        manageItem.target = self
+        menu.addItem(manageItem)
         menu.addItem(.separator())
 
         // --- Quit ---
@@ -138,6 +147,13 @@ final class StatusBarController: NSObject {
     /// Syncs the menu item checkmark with the actual SMAppService status.
     private func refreshLoginItemState() {
         loginItem.state = (SMAppService.mainApp.status == .enabled) ? .on : .off
+    }
+
+    // MARK: - Manage menu bar
+
+    @objc private func handleManage() {
+        managerWindowController?.showWindow(nil)
+        NSApp.activate(ignoringOtherApps: true)
     }
 }
 

@@ -42,5 +42,22 @@
     <!-- Required when using a manual main.swift entry point -->
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
+
+    <!--
+        Screen Recording: needed for CGWindowListCopyWindowInfo to return
+        kCGWindowOwnerName and kCGWindowOwnerPID on macOS 12+. Without it,
+        the menu bar scanner can detect status-item windows by layer but
+        cannot identify which app owns them.
+    -->
+    <key>NSScreenCaptureUsageDescription</key>
+    <string>Activity Monitor needs Screen Recording access to identify which app owns each menu bar icon.</string>
+
+    <!--
+        Accessibility: needed for AXUIElement calls that provide finer-grained
+        correlation of status items to their owning processes. The app works
+        in a degraded mode without this permission.
+    -->
+    <key>NSAccessibilityUsageDescription</key>
+    <string>Activity Monitor needs Accessibility access to enumerate and manage menu bar icons from other apps.</string>
 </dict>
 </plist>
