@@ -217,8 +217,7 @@ final class ManagerWindowController: NSWindowController, NSWindowDelegate {
         let candidates   = NSWorkspace.shared.runningApplications.filter {
             $0.activationPolicy == .regular &&
             !detectedPIDs.contains($0.processIdentifier) &&
-            $0.bundleIdentifier != nil &&
-            !PreferencesManager.shared.hasProxy(bundleID: $0.bundleIdentifier!)
+            $0.bundleIdentifier != nil
         }
 
         guard !candidates.isEmpty else {

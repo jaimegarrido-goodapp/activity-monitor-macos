@@ -88,11 +88,12 @@ final class OverlayController {
         // Adding 1 puts us just above status items but below pull-down menus.
         win.level = NSWindow.Level(rawValue: NSWindow.Level.statusBar.rawValue + 1)
 
-        win.backgroundColor    = .clear
-        win.isOpaque           = false
-        win.hasShadow          = false
-        win.ignoresMouseEvents = true
-        win.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
+        win.backgroundColor      = .clear
+        win.isOpaque             = false
+        win.hasShadow            = false
+        win.ignoresMouseEvents   = true
+        win.isReleasedWhenClosed = false   // we manage lifetime via the overlays dict
+        win.collectionBehavior   = [.canJoinAllSpaces, .stationary, .ignoresCycle]
 
         // NSVisualEffectView with .menu material blends with the menu bar
         // background automatically in both Light and Dark appearances.

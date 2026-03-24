@@ -18,12 +18,12 @@ struct SystemMetrics {
 
     // MARK: - Formatted strings for display
 
-    /// Compact label shown in the menu bar, e.g. "CPU 18% | RAM 12.4 GB"
+    /// Compact label shown in the menu bar, e.g. "CPU 18% | RAM 12GB"
     var statusBarTitle: String {
         String(
-            format: "CPU %.0f%% | RAM %.1f GB",
+            format: "CPU %.0f%% | RAM %dGB",
             cpuUsage,
-            gigabytes(memoryUsed)
+            Int(ceil(gigabytes(memoryUsed)))
         )
     }
 

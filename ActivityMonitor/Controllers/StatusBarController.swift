@@ -29,6 +29,7 @@ final class StatusBarController: NSObject {
     private let pauseItem     = NSMenuItem(title: "Pause updates",    action: #selector(handlePause), keyEquivalent: "p")
     private let loginItem     = NSMenuItem(title: "Launch at Login",  action: #selector(handleLogin), keyEquivalent: "l")
     private let manageItem    = NSMenuItem(title: "Manage Menu Bar…", action: #selector(handleManage), keyEquivalent: "m")
+    private let dockItem      = NSMenuItem(title: "Hide Dock",         action: #selector(handleDock),   keyEquivalent: "d")
 
     // MARK: - Init
 
@@ -44,6 +45,7 @@ final class StatusBarController: NSObject {
         buildMenu()
         subscribeToMetrics()
         refreshLoginItemState()
+        refreshDockItemState()
 
         manager.start()
     }
@@ -81,6 +83,11 @@ final class StatusBarController: NSObject {
         // --- Manage Menu Bar ---
         manageItem.target = self
         menu.addItem(manageItem)
+        menu.addItem(.separator())
+
+        // --- Hide / Show Dock ---
+        dockItem.target = self
+        menu.addItem(dockItem)
         menu.addItem(.separator())
 
         // --- Quit ---
@@ -154,6 +161,53 @@ final class StatusBarController: NSObject {
     @objc private func handleManage() {
         managerWindowController?.showWindow(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    // MARK: - Dock visibility
+
+    /// Returns true if the Dock is currently set to auto-hide.
+    private var isDockHidden: Bool {
+        let result = UserDefaults(suiteName: "com.apple.dock")?.bool(forKey: "autohide") ?? false
+        return result
+    }
+
+    private func refreshDockItemState() {
+        if isDockHidden {
+            dockItem.title = "Show Dock"
+            dockItem.state = .on
+        } else {
+            dockItem.title = "Hide Dock"
+            dockItem.state = .off
+        }
+    }
+
+    @objc private func handleDock() {
+        let hide = !isDockHidden
+        if hide {
+            // Completely suppress the Dock:
+            // • autohide = true         → hides the Dock from view
+            // • autohide-delay = 1000   → 1000 s delay before it reappears on hover
+            //                             (effectively never appears on mouse approach)
+            run("/usr/bin/defaults", args: ["write", "com.apple.dock", "autohide", "-bool", "true"])
+            run("/usr/bin/defaults", args: ["write", "com.apple.dock", "autohide-delay", "-float", "1000"])
+        } else {
+            // Restore: disable autohide and remove the custom delay.
+            run("/usr/bin/defaults", args: ["write", "com.apple.dock", "autohide", "-bool", "false"])
+            run("/usr/bin/defaults", args: ["delete", "com.apple.dock", "autohide-delay"])
+        }
+        run("/usr/bin/killall", args: ["Dock"])
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+            self?.refreshDockItemState()
+        }
+    }
+
+    /// Runs a command-line tool synchronously (fire-and-forget, no output needed).
+    private func run(_ path: String, args: [String]) {
+        let task = Process()
+        task.executableURL = URL(fileURLWithPath: path)
+        task.arguments     = args
+        try? task.run()
+        task.waitUntilExit()
     }
 }
 

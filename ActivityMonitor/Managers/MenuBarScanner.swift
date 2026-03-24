@@ -147,6 +147,13 @@ final class MenuBarScanner {
         // Skip windows with zero or tiny area (some helper items have 0-width).
         guard frame.width > 2 && frame.height > 2 else { return nil }
 
+        // Skip windows that are not in the menu bar area.
+        // CGWindowList uses CG coordinates (y=0 at top of screen), so genuine
+        // menu bar status items always start at y ≈ 0. Floating toolbars or HUDs
+        // from screenshot apps (e.g. iScrean Shoter) sit lower on the screen and
+        // also appear at layer 25 — this filter excludes them.
+        guard frame.origin.y < 50 else { return nil }
+
         // Correlate with NSRunningApplication.
         let runningApp     = NSRunningApplication(processIdentifier: ownerPID)
         let bundleID       = runningApp?.bundleIdentifier ?? ""

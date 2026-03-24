@@ -41,11 +41,11 @@ final class PreferencesManager {
         hiddenBundleIDs = ids
     }
 
-    // MARK: - Proxy items
+    // MARK: - Proxy items (ordered — insertion order is preserved)
 
-    var proxyBundleIDs: Set<String> {
-        get { Set(defaults.stringArray(forKey: Key.proxyBundleIDs) ?? []) }
-        set { defaults.set(Array(newValue), forKey: Key.proxyBundleIDs) }
+    var proxyBundleIDs: [String] {
+        get { defaults.stringArray(forKey: Key.proxyBundleIDs) ?? [] }
+        set { defaults.set(newValue, forKey: Key.proxyBundleIDs) }
     }
 
     func hasProxy(bundleID: String) -> Bool {
@@ -55,7 +55,11 @@ final class PreferencesManager {
     func setProxy(_ enabled: Bool, bundleID: String) {
         guard !bundleID.isEmpty else { return }
         var ids = proxyBundleIDs
-        if enabled { ids.insert(bundleID) } else { ids.remove(bundleID) }
+        if enabled {
+            if !ids.contains(bundleID) { ids.append(bundleID) }
+        } else {
+            ids.removeAll { $0 == bundleID }
+        }
         proxyBundleIDs = ids
     }
 }
